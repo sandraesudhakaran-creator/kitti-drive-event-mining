@@ -151,7 +151,8 @@ def run_pipeline(
                                            ecfg["merge_gap_s"], sid)
             if seq.has_labels():
                 per_frame, _ = evaluate_ttc(lead, seq.load_labels(), vcfg, camera, fps)
-                ttc_frames.append(per_frame.assign(sequence=sid))
+                if not per_frame.empty:
+                    ttc_frames.append(per_frame.assign(sequence=sid))
 
     events_df = events_to_frame(events)
     events_df.to_csv(out_dir / "events.csv", index=False)
