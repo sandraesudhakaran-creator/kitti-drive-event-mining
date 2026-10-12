@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drive-events"
+version = "0.1.0"
+description = "Detection and semi-automatic labeling of safety-relevant driving events from synchronized camera and vehicle-dynamics data (KITTI)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Sandra Elachappilly Sudhakaran" }]
+dependencies = [
+    "numpy>=1.23",
+    "pandas>=1.5",
+    "scipy>=1.9",
+    "scikit-learn>=1.2",
+    "matplotlib>=3.6",
+    "pyyaml>=6.0",
+    "pillow>=9.0",
+]
+
+[project.optional-dependencies]
+video = ["ultralytics>=8.1"]
+review = ["ipywidgets>=8.0"]
+clips = ["imageio>=2.28", "imageio-ffmpeg>=0.4"]
+dev = ["pytest>=7.0", "ruff>=0.4"]
+
+[project.scripts]
+drive-events = "drive_events.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]

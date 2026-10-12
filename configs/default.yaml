@@ -1,0 +1,51 @@
+# Default configuration for the drive-events pipeline.
+# Mirrors drive_events/config.py:DEFAULT_CONFIG (a test keeps them in sync).
+# Copy this file and change only what you need; it is deep-merged onto the defaults.
+data: {split: training, camera: image_02, fps: 10.0}
+signals:
+  resample_hz: 10.0
+  lowpass_cutoff_hz: 1.5
+  filter_order: 2
+  max_gap_s: 0.5
+  plausibility:
+    speed: [-1.0, 70.0]
+    ax: [-12.0, 12.0]
+    ay: [-12.0, 12.0]
+    yaw_rate: [-1.5, 1.5]
+events:
+  threshold_mode: absolute
+  percentile: 97.0
+  hysteresis_ratio: 0.7
+  merge_gap_s: 0.5
+  definitions:
+    braking: {signal: ax_f, direction: below, threshold: -1.5, harsh: -3.0, min_duration_s: 0.5}
+    acceleration: {signal: ax_f, direction: above, threshold: 1.5, harsh: 2.5, min_duration_s: 0.5}
+    turn: {signal: yaw_rate_abs, direction: above, threshold: 0.15, harsh: 0.35, min_duration_s: 1.0,
+      min_speed_mps: 2.0}
+    lateral: {signal: ay_abs, direction: above, threshold: 2.0, harsh: 3.5, min_duration_s: 0.5}
+    jerk: {signal: jerk_abs, direction: above, threshold: 3.0, harsh: 6.0, min_duration_s: 0.2}
+    standstill: {signal: speed_f, direction: below, threshold: 0.3, min_duration_s: 1.0, percentile_exempt: true}
+video:
+  detector: yolo
+  yolo_weights: yolov8n.pt
+  yolo_conf: 0.35
+  yolo_imgsz: 1280
+  yolo_batch: 16
+  yolo_classes: [car, truck, bus]
+  gt_classes: [Car, Van, Truck]
+  tracker_iou: 0.3
+  tracker_max_age: 2
+  camera_height_m: 1.65
+  lane_half_width_m: 1.8
+  min_box_height_px: 12
+  ttc_window: 5
+  ttc_min_frames: 3
+  ttc_max_s: 10.0
+  critical_ttc_s: 3.0
+  harsh_ttc_s: 1.5
+  critical_min_duration_s: 0.3
+  critical_min_ego_speed_mps: 1.0
+  match_iou: 0.5
+windows: {window_s: 2.0, stride_s: 0.5, min_overlap: 0.5, max_nan_fraction: 0.2}
+models: {contamination: 0.03, review_top_k: 20, cv_splits: 5, seed: 42}
+cards: {context_s: 3.0, max_cards: 60}
